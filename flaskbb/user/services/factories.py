@@ -60,11 +60,15 @@ def settings_update_handler():
     return DefaultSettingsUpdateHandler(db, pluggy)
 
 
-def settings_form_factory():
-    form = GeneralSettingsForm()
+def _configure_settings_choices(form):
     form.theme.choices = get_available_themes()
     form.theme.choices.insert(0, ("", "Default"))
     form.language.choices = get_available_languages()
+
+
+def settings_form_factory():
+    form = GeneralSettingsForm()
+    _configure_settings_choices(form)
 
     if not form.is_submitted() or not form.validate_on_submit():
         form.theme.data = current_user.theme
