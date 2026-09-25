@@ -45,8 +45,6 @@ INVALID_EMAIL_MESSAGE = _("Invalid email address.")
 
 
 class GeneralSettingsForm(FlaskBBForm):
-    # The choices for those fields will be generated in the user view
-    # because we cannot access the current_app outside of the context
     language = SelectField(_("Language"))
     theme = SelectField(_("Theme"))
     submit = SubmitField(_("Save"))
