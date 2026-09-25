@@ -52,7 +52,10 @@ class GeneralSettingsForm(FlaskBBForm):
     submit = SubmitField(_("Save"))
 
     def as_change(self):
-        return SettingsUpdate(language=self.language.data, theme=self.theme.data)
+        return SettingsUpdate(
+            language=self.language.data,
+            theme=self.theme.data,
+        )
 
 
 class ChangeEmailForm(FlaskBBForm):
