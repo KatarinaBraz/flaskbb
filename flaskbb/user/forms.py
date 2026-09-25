@@ -41,6 +41,8 @@ from ..core.user.update import (
 
 logger = logging.getLogger(__name__)
 
+INVALID_EMAIL_MESSAGE = _("Invalid email address.")
+
 
 class GeneralSettingsForm(FlaskBBForm):
     # The choices for those fields will be generated in the user view
@@ -58,7 +60,7 @@ class ChangeEmailForm(FlaskBBForm):
         _("Old email address"),
         validators=[
             DataRequired(message=_("A valid email address is required.")),
-            Email(message=_("Invalid email address.")),
+            Email(message=INVALID_EMAIL_MESSAGE),
         ],
     )
     new_email = StringField(
@@ -66,12 +68,12 @@ class ChangeEmailForm(FlaskBBForm):
         validators=[
             InputRequired(),
             EqualTo("confirm_new_email", message=_("Email addresses must match.")),
-            Email(message=_("Invalid email address.")),
+            Email(message=INVALID_EMAIL_MESSAGE),
         ],
     )
     confirm_new_email = StringField(
         _("Confirm email address"),
-        validators=[Email(message=_("Invalid email address."))],
+        validators=[Email(message=INVALID_EMAIL_MESSAGE)],
     )
     submit = SubmitField(_("Save"))
 
