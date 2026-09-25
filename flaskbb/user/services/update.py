@@ -16,8 +16,8 @@ from ...core.exceptions import accumulate_errors
 from ...utils.database import try_commit
 
 
-def _validate_changeset(model, changeset, validators):
-    accumulate_errors(lambda validator: validator.validate(model, changeset), validators)
+def _validate_changeset(user, changeset, validators):
+    accumulate_errors(lambda validator: validator.validate(user, changeset), validators)
 
 
 @attr.s(eq=False, order=False, frozen=True, repr=True, hash=False)
