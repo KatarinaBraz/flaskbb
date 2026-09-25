@@ -16,6 +16,10 @@ from ...core.exceptions import accumulate_errors
 from ...utils.database import try_commit
 
 
+def _validate_changeset(model, changeset, validators):
+    accumulate_errors(lambda validator: validator.validate(model, changeset), validators)
+
+
 @attr.s(eq=False, order=False, frozen=True, repr=True, hash=False)
 class DefaultDetailsUpdateHandler(ChangeSetHandler):
     """
@@ -27,7 +31,7 @@ class DefaultDetailsUpdateHandler(ChangeSetHandler):
     validators = attr.ib(factory=list)
 
     def apply_changeset(self, model, changeset):
-        accumulate_errors(lambda v: v.validate(model, changeset), self.validators)
+        _validate_changeset(model, changeset, self.validators)
         changeset.assign_to_user(model)
         try_commit(self.db.session, "Could not update details")
         self.plugin_manager.hook.flaskbb_details_updated(
@@ -46,7 +50,7 @@ class DefaultPasswordUpdateHandler(ChangeSetHandler):
     validators = attr.ib(factory=list)
 
     def apply_changeset(self, model, changeset):
-        accumulate_errors(lambda v: v.validate(model, changeset), self.validators)
+        _validate_changeset(model, changeset, self.validators)
         model.password = changeset.new_password
         try_commit(self.db.session, "Could not update password")
         self.plugin_manager.hook.flaskbb_password_updated(user=model)
@@ -63,7 +67,7 @@ class DefaultEmailUpdateHandler(ChangeSetHandler):
     validators = attr.ib(factory=list)
 
     def apply_changeset(self, model, changeset):
-        accumulate_errors(lambda v: v.validate(model, changeset), self.validators)
+        _validate_changeset(model, changeset, self.validators)
         model.email = changeset.new_email
         try_commit(self.db.session, "Could not update email")
         self.plugin_manager.hook.flaskbb_email_updated(
