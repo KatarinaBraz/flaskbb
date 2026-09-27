@@ -32,6 +32,7 @@ from .update import (
 
 
 def _collect_validators(validator_groups):
+    """Flatten validator groups returned by plugin hooks into a single list."""
     return list(chain.from_iterable(validator_groups))
 
 
@@ -61,6 +62,7 @@ def settings_update_handler():
 
 
 def _configure_settings_choices(form):
+    """Populate theme and language choices using the options available at runtime."""
     form.theme.choices = get_available_themes()
     form.theme.choices.insert(0, ("", "Default"))
     form.language.choices = get_available_languages()

@@ -17,6 +17,7 @@ from ...utils.database import try_commit
 
 
 def _validate_changeset(user, changeset, validators):
+    """Run all update validators and accumulate their errors before applying changes."""
     accumulate_errors(lambda validator: validator.validate(user, changeset), validators)
 
 
