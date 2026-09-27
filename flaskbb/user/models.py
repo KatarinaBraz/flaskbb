@@ -450,6 +450,25 @@ class User(db.Model, UserMixin, CRUDMixin):
             return True
         return False
 
+    def _update_secondary_groups(self, groups: list[Group]) -> None:
+        """Replace the user's secondary groups and invalidate the cached permissions."""
+        # TODO: Only remove/add groups that are selected
+        with db.session.no_autoflush:
+            secondary_groups = (
+                db.session.execute(self.secondary_groups.select()).scalars().all()
+            )
+
+            for group in secondary_groups:
+                self.remove_from_group(group)
+
+        for group in groups:
+            # Do not add the primary group to the secondary groups
+            if group == self.primary_group:
+                continue
+            self.add_to_group(group)
+
+        self.invalidate_cache()
+
     @override
     def save(self, groups: list[Group] | None = None) -> "User":
         """Saves a user. If a list with groups is provided, it will add those
@@ -459,22 +478,7 @@ class User(db.Model, UserMixin, CRUDMixin):
                        secondary groups from user.
         """
         if groups is not None:
-            # TODO: Only remove/add groups that are selected
-            with db.session.no_autoflush:
-                secondary_groups = (
-                    db.session.execute(self.secondary_groups.select()).scalars().all()
-                )
-
-                for group in secondary_groups:
-                    self.remove_from_group(group)
-
-            for group in groups:
-                # Do not add the primary group to the secondary groups
-                if group == self.primary_group:
-                    continue
-                self.add_to_group(group)
-
-            self.invalidate_cache()
+            self._update_secondary_groups(groups)
 
         db.session.add(self)
         db.session.commit()
